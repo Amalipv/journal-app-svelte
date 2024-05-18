@@ -1,11 +1,12 @@
 <script>
   import moment from "moment";
+
   let userid = sessionStorage.getItem("uid");
   console.log("Logged in as - ", userid);
   let formValues = {
-    userId: userid,
-    todaysEntry: "",
-    entryDate: "",
+    userid: userid,
+    entrydate: "",
+    entrydetails: "",
   };
   formValues.entryDate = new Date().toLocaleDateString();
   let eDate = moment(formValues.entryDate).format("yyyy-MM-DD");
@@ -15,7 +16,22 @@
     msg: "",
     resStatus: null,
   };
-  function getEntries() {}
+  var getEntries = async () => {
+    console.log("Inside getEntries");
+    let response = await fetch("http://localhost:8090/getEntry", {
+      method: "POST",
+      body: JSON.stringify({
+        userid: userid,
+        EntryDate: userSelectedDate,
+      }),
+      headers: {
+        "Content-type": "application/json;charset=UTF-8",
+      },
+    });
+    let data = await response.json();
+    formValues = data;
+    console.log("server returned ", formValues, data);
+  };
   async function addEntry() {
     console.log(eDate, "-", userid);
     //call the api
@@ -24,7 +40,7 @@
       body: JSON.stringify({
         userid: parseInt(userid),
         EntryDate: eDate,
-        EntryDetails: formValues.todaysEntry,
+        EntryDetails: formValues.entrydetails,
       }),
       headers: {
         "Content-type": "application/json;charset=UTF-8",
@@ -61,10 +77,11 @@
           class="textarea"
           placeholder="10 lines of textarea"
           rows="10"
-          bind:value={formValues.todaysEntry}
+          on:load={getEntries()}
+          bind:value={formValues.entrydetails}
         ></textarea>
         <br />
-        <time datetime="2016-1-1"> 1 Jan 2016</time>
+        <time datetime="2016-1-1"> {formValues.entrydate}</time>
       </div>
     </div>
     <footer class="card-footer">
