@@ -54,6 +54,7 @@ export default {
 		// consult the documentation for details:
 		// https://github.com/rollup/plugins/tree/master/packages/commonjs
 		resolve({
+			extensions: ['svelte'],
 			browser: true,
 			dedupe: ['svelte'],
 			exportConditions: ['svelte']
